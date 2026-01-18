@@ -132,10 +132,10 @@ void Dungeon::handleRoomWithEnemy(Room * room)
             // fight
             handleFightActions(&enemy);
             room->clearEnemies();
+	    return;
         }
         else if (input == 2)
         {
-            enterRoom(player.room);
             return;
         }
         else
@@ -189,23 +189,41 @@ void Dungeon::handleFightActions(GameCharacter * enemy)
 {
     string action[] = {
         "[1] Attack",
-        "[2] Retreat"
+	"[2] Lucky hit",
+        "[3] Retreat"
         };
     while (true)
     {
         // handle player attack
         fightingScene(player, *enemy);
-        printActions(2, action,0,13);
+        printActions(3, action,0,13);
         int input;
         cin >> input;
         if (input == 1)
         {
-            // attack
-            int damage = enemy->takeDamage(player.strength);
-            cout << "You attack does " << damage << "damage" << "\n"
-                 << enemy->name << " has " << enemy->currentHealth << " hp left>\n";
-        }
-        else if (input == 2)
+		if (enemy->dodge() == 0)
+		{
+            		// attack
+            		int damage = enemy->takeDamage(player.strength);
+            		cout << "You attack does " << damage << "damage" << "\n"
+                	 << enemy->name << " has " << enemy->currentHealth << " hp left>\n";
+		}
+	}
+	else if (input == 2)
+	{
+		if (enemy->dodge() == 0)
+		{
+			if (player.doCrit() == 1)
+			{
+				int damage = enemy->takeDamage(2*player.strength);
+			}
+			else
+			{
+				int damage = enemy->takeDamage(static_cast<int>(0.5*player.strength));
+			}
+		}
+	}
+        else if (input == 3)
         {
             enterRoom(player.room);
             return;
@@ -224,10 +242,13 @@ void Dungeon::handleFightActions(GameCharacter * enemy)
             return;
         }
         // handle enemy attack 
-        int damage = player.takeDamage(enemy->strength);
-        cout << enemy->name << "'s attack does " << damage << "damage" << endl;
-        cout << "You now have " << player.currentHealth << endl;
-        if (player.isDead())
+	if (player.dodge() == 0)
+	{
+        	int damage = player.takeDamage(enemy->strength);
+        	cout << enemy->name << "'s attack does " << damage << "damage" << endl;
+        	cout << "You now have " << player.currentHealth << endl;
+	}
+	if (player.isDead())
         {
             cout << "you have been defeated" << endl;
             player.addMoney(enemy->money);

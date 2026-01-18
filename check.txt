@@ -1,5 +1,0 @@
-classe :
-chevalier => epee
-assasin => dague
-mage => baton
-archer => arc

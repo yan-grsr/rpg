@@ -17,11 +17,16 @@ int GameCharacter::takeDamage(int amount)
     return damage;
 };
 
-int GameCharacter::dodge()
+bool GameCharacter::dodge()
 {
-    float a = 0;
-    return a > 0.7;
-}
+    return rand() % 100 <= dexterity;
+};
+
+bool GameCharacter::doCrit()
+{
+	return rand() % 100 <= chance;
+};
+
 bool GameCharacter::isDead()
 {
     return currentHealth <= 0;
